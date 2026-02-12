@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Experimental Web SLAM v3</title>
+<title>Web Experimental SLAM v3 Fixed</title>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://docs.opencv.org/4.8.0/opencv.js"></script>
+<script async src="https://docs.opencv.org/4.8.0/opencv.js"></script>
 
 <style>
 body { margin:0; overflow:hidden; }
@@ -42,7 +42,7 @@ navigator.mediaDevices.getUserMedia({
   video.play();
 });
 
-// THREE
+// THREE INIT
 function initThree(){
 
   renderer = new THREE.WebGLRenderer({canvas:threeCanvas, alpha:true});
@@ -84,7 +84,7 @@ function processFrame(){
   cvCanvas.width = video.videoWidth;
   cvCanvas.height = video.videoHeight;
 
-  let ctx = cvCanvas.getContext("2d");
+  let ctx = cvCanvas.getContext("2d",{willReadFrequently:true});
   ctx.drawImage(video,0,0);
 
   let src = cv.imread(cvCanvas);
@@ -92,19 +92,18 @@ function processFrame(){
   cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
 
   let orb = new cv.ORB();
-
   let keypoints = new cv.KeyPointVector();
   let descriptors = new cv.Mat();
 
   orb.detectAndCompute(gray,new cv.Mat(),keypoints,descriptors);
 
-  if (prevDescriptors && descriptors.rows > 10){
+  if (prevDescriptors && descriptors.rows > 20){
 
     let bf = new cv.BFMatcher(cv.NORM_HAMMING,true);
     let matches = new cv.DMatchVector();
     bf.match(prevDescriptors,descriptors,matches);
 
-    if (matches.size() > 20){
+    if (matches.size() > 30){
 
       let pts1 = [];
       let pts2 = [];
@@ -121,27 +120,38 @@ function processFrame(){
       let mat2 = cv.matFromArray(pts2.length/2,2,cv.CV_32F,pts2);
 
       let focal = 800;
-      let pp = new cv.Point2f(gray.cols/2, gray.rows/2);
 
+      // ✅ FIX: ไม่ใช้ cv.Point2f แล้ว
       let E = cv.findEssentialMat(
         mat1,
         mat2,
         focal,
-        pp,
+        gray.cols/2,
+        gray.rows/2,
         cv.RANSAC,
         0.999,
         1.0
       );
 
-      if (!E.empty()){
+      if (E && !E.empty()){
 
         let R = new cv.Mat();
         let t = new cv.Mat();
         let mask = new cv.Mat();
 
-        cv.recoverPose(E,mat1,mat2,R,t,focal,pp,mask);
+        cv.recoverPose(
+          E,
+          mat1,
+          mat2,
+          R,
+          t,
+          focal,
+          gray.cols/2,
+          gray.rows/2,
+          mask
+        );
 
-        // แปลง R,t เป็น Three.js matrix
+        // แปลง R เป็น Three.js matrix
         let rot = new THREE.Matrix4().set(
           R.doubleAt(0,0),R.doubleAt(0,1),R.doubleAt(0,2),0,
           R.doubleAt(1,0),R.doubleAt(1,1),R.doubleAt(1,2),0,
@@ -149,10 +159,11 @@ function processFrame(){
           0,0,0,1
         );
 
+        let scaleFactor = 0.1; // ปรับ scale motion
         let trans = new THREE.Matrix4().makeTranslation(
-          t.doubleAt(0,0),
-          t.doubleAt(1,0),
-          t.doubleAt(2,0)
+          t.doubleAt(0,0)*scaleFactor,
+          t.doubleAt(1,0)*scaleFactor,
+          t.doubleAt(2,0)*scaleFactor
         );
 
         let delta = new THREE.Matrix4();
