@@ -206,10 +206,17 @@ function processFrame(){
   requestAnimationFrame(processFrame);
 }
 
-cv['onRuntimeInitialized']=()=>{
-  initThree();
-  processFrame();
-};
+function waitForOpenCV(){
+  if (typeof cv === "undefined" || !cv.Mat){
+    requestAnimationFrame(waitForOpenCV);
+  } else {
+    initThree();
+    processFrame();
+  }
+}
+
+waitForOpenCV();
+
 
 </script>
 </body>
