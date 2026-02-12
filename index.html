@@ -2,30 +2,22 @@
 <html>
 <head>
 <meta charset="utf-8">
-
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 <script src="https://unpkg.com/mind-ar@1.2.5/dist/mindar-aframe.prod.js"></script>
-
 </head>
 
 <body>
+
 <a-scene
   mindar-image="autoStart: true;"
+  embedded
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: true"
 >
 
-  <a-assets>
-    <a-asset-item id="model" src="mars_glb-opt.glb"></a-asset-item>
-  </a-assets>
-
   <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-  <a-entity
-    gltf-model="#model"
-    position="0 0 -1"
-    scale="0.2 0.2 0.2">
-  </a-entity>
-
 </a-scene>
-</b
+
+</body>
+</html>
