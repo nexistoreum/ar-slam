@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React MindAR SLAM</title>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-world-three.prod.js"></script>
-    <style>
-      body { margin: 0; overflow: hidden; }
-      #ar-container { width: 100vw; height: 100vh; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/App.jsx"></script>
-  </body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-aframe.prod.js"></script>
+
+<a-scene 
+  mindar-image="autoStart: true;"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: true"
+>
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+  <!-- วางโมเดลแบบ world space -->
+  <a-entity 
+    gltf-model="#model"
+    position="0 0 -1"
+    scale="0.2 0.2 0.2">
+  </a-entity>
+</a-scene>
