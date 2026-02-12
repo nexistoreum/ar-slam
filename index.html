@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-aframe.prod.js"></script>
+<meta charset="utf-8">
+
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://unpkg.com/mind-ar@1.2.5/dist/mindar-aframe.prod.js"></script>
+
 </head>
 
 <body>
@@ -13,21 +15,17 @@
   device-orientation-permission-ui="enabled: true"
 >
 
-  <!-- โหลดโมเดลก่อน -->
   <a-assets>
-    <a-asset-item id="model" src="mars_glb-opt (1).glb"></a-asset-item>
+    <a-asset-item id="model" src="mars_glb-opt.glb"></a-asset-item>
   </a-assets>
 
   <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-  <!-- เรียกใช้งานโมเดล -->
   <a-entity
     gltf-model="#model"
     position="0 0 -1"
-    scale="0.2 0.2 0.2"
-    rotation="0 180 0">
+    scale="0.2 0.2 0.2">
   </a-entity>
 
 </a-scene>
-</body>
-</html>
+</b
